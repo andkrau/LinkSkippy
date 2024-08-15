@@ -51,10 +51,10 @@ call :forEachInterface enterPromiscuous
 PowerShell Invoke-Command {^
   Start-NetEventSession -Name 'CDP';^
 }>nul 2>&1
-IF /I %MODE% EQU CDP pktmon filter add "CDP" -m 01-00-0C-CC-CC-CC -d 0x2000>nul 2>&1
-IF /I %MODE% EQU LLDP pktmon filter add "LLDP" -d LLDP>nul 2>&1
+if /i %MODE% EQU CDP pktmon filter add "CDP" -m 01-00-0C-CC-CC-CC -d 0x2000>nul 2>&1
+if /i %MODE% EQU LLDP pktmon filter add "LLDP" -d LLDP>nul 2>&1
 pktmon start --capture --type flow --pkt-size 0 --file-name "%ETL%" --comp nics>nul 2>&1
-goto :EOF
+goto :eof
 
 :resetSession
 del /q /s "%ETL%">nul 2>&1
@@ -69,25 +69,25 @@ PowerShell Invoke-Command {^
   Remove-NetEventPacketCaptureProvider -SessionName 'CDP';^
   Remove-NetEventSession -Name 'CDP';^
 }>nul 2>&1
-goto :EOF
+goto :eof
 
 :forEachInterface
 for /f "skip=3 tokens=1-3*" %%a in ('netsh interface show interface') do call :%1 %%a %%b %%c "%%d"
-goto :EOF
+goto :eof
 
 :enterPromiscuous
-if "%1" NEQ "Enabled" GOTO :EOF
+if "%1" NEQ "Enabled" goto :eof
 PowerShell Invoke-Command {^
   Add-NetEventNetworkAdapter -Name '%~4' -PromiscuousMode $True;^
 }>nul 2>&1
-goto :EOF
+goto :eof
 
 :exitPromiscuous
-if "%1" NEQ "Enabled" GOTO :EOF
+if "%1" NEQ "Enabled" goto :eof
 PowerShell Invoke-Command {^
   Remove-NetEventNetworkAdapter -Name '%~4';^
 }>nul 2>&1
-goto :EOF
+goto :eof
 
 :receivedPacket
 echo  %MODE% packet received...
