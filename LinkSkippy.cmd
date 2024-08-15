@@ -1,6 +1,5 @@
 @echo off
 title Requesting admin rights...
-REM net session >nul 2>&1 || (powershell start -verb runas '%0 %1' &exit /b)
 net session >nul 2>&1 || (PowerShell -command "Start-Process '%~nx0' %1 -Verb runas" &exit /b)
 title LinkSkippy
 color 1f
@@ -115,7 +114,6 @@ if %errorlevel% EQU 0 (
   for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "VTP Management Domain (" "%TXT%"') do echo  Domain:%%e
   for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Native VLAN ID (" "%TXT%"') do echo  VLAN:%%e
   for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Duplex (" "%TXT%"') do echo  Duplex:%%e
-  REM for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Management Addresses (" "%TXT%"') do echo  Management:%%e
 )
 goto :eof
 
