@@ -11,7 +11,7 @@ The tool returns information from protocols used in network management to discov
 +   [LLDP] - Link Layer Discovery Protocol
 
 ### How to use?
-The default mode of operation is CDP. To use this mode, you can simply double click the file. The mode can also be specified as a command line option.
+You can simply double click the file and you will be prompted for which mode you want to use. The mode can also be specified as a command line option.
 
 Examples:
 ```
