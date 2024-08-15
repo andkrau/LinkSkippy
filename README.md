@@ -21,7 +21,7 @@ LinkSkippy CDP
 
 ### Where do I get it?
 
-[Click here to download the current version](LinkSkippy.cmd?raw=true)
+[Click here to download the current version](https://github.com/andkrau/LinkSkippy/archive/refs/heads/main.zip)
 
 [CDP]:http://en.wikipedia.org/wiki/Cisco_Discovery_Protocol
 [LLDP]:http://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol
