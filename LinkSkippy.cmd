@@ -1,12 +1,58 @@
+:: LinkSkippy - Simple Windows link discovery tool supporting CDP & LLDP
+:: Copyright (C) 2024 Andrew Krause - https://github.com/andkrau/LinkSkippy
+::
+:: This program is free software: you can redistribute it and/or modify
+:: it under the terms of the GNU General Public License as published by
+:: the Free Software Foundation, either version 3 of the License, or
+:: (at your option) any later version.
+::
+:: This program is distributed in the hope that it will be useful,
+:: but WITHOUT ANY WARRANTY; without even the implied warranty of
+:: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:: GNU General Public License for more details.
+::
+:: You should have received a copy of the GNU General Public License
+:: along with this program.  If not, see <https://www.gnu.org/licenses/>.
 @echo off
 title Requesting admin rights...
 net session >nul 2>&1 || (PowerShell -command "Start-Process '%~nx0' %1 -Verb runas" &exit /b)
 title LinkSkippy
 color 1f
-if "%1" EQU "" set MODE=CDP
 if "%1" NEQ "" set MODE=%1
+if /i "%MODE%" NEQ "CDP" if /i "%MODE%" NEQ "LLDP" call :choose
 
 :begin
+call :logo
+echo  Configuring packet capture session...
+set ETL=%TEMP%\CDP.etl
+set TXT=%TEMP%\CDP.txt
+call :resetSession
+call :sleep 1
+call :startSession
+echo  Waiting for %MODE% packet...
+
+:checkCounter
+for /f "tokens=* delims=" %%a in ('pktmon counters') do set result=%%a
+if "%result%" NEQ "All counters are zero." goto receivedPacket
+call :sleep 1
+goto checkCounter
+
+:choose
+call :logo
+echo  Please choose [C]DP or [L]LDP...
+choice /c cl /n /t 30 /d c
+call :chose_%ERRORLEVEL%
+goto :eof
+
+:chose_1
+set MODE=CDP
+goto :eof
+
+:chose_2
+set MODE=LLDP
+goto :eof
+
+:logo
 cls
 echo.
 echo  #                        #####                              
@@ -17,30 +63,12 @@ echo  #       # #  # # #  #         # #  #   # #####  #####    #
 echo  #       # #   ## #   #  #     # #   #  # #      #        #  
 echo  ####### # #    # #    #  #####  #    # # #      #        #  
 echo.
-if /i "%MODE%" NEQ "CDP" if /i "%MODE%" NEQ "LLDP" goto :unsupported
-echo  Configuring packet capture session...
-set ETL=%TEMP%\CDP.etl
-set TXT=%TEMP%\CDP.txt
-call :resetSession
-call :sleep 1
-call :startSession
-echo  Waiting for %MODE% packet...
-
-:checkCounter
-for /f "tokens=* delims=" %%a IN ('pktmon counters') do set result=%%a
-if "%result%" NEQ "All counters are zero." goto receivedPacket
-call :sleep 1
-goto checkCounter
+goto :eof
 
 :sleep
 set /a SECONDS=%1+1
 ping -n %SECONDS% 127.0.0.1>nul
 goto :eof
-
-:unsupported
-echo  Protocol unsupported!
-pause>nul
-exit
 
 :startSession
 PowerShell Invoke-Command {^
