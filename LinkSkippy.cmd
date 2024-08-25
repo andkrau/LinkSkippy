@@ -23,13 +23,13 @@ if /i "%MODE%" NEQ "CDP" if /i "%MODE%" NEQ "LLDP" call :choose
 
 :begin
 call :logo
-echo  Configuring packet capture session...
+echo. Configuring packet capture session...
 set ETL=%TEMP%\CDP.etl
 set TXT=%TEMP%\CDP.txt
 call :resetSession
 call :sleep 1
 call :startSession
-echo  Waiting for %MODE% packet...
+echo. Waiting for %MODE% packet...
 
 :checkCounter
 for /f "tokens=* delims=" %%a in ('pktmon counters') do set result=%%a
@@ -39,7 +39,7 @@ goto checkCounter
 
 :choose
 call :logo
-echo  Please choose [C]DP or [L]LDP...
+echo. Please choose [C]DP or [L]LDP...
 choice /c cl /n /t 30 /d c
 call :chose_%ERRORLEVEL%
 goto :eof
@@ -55,13 +55,13 @@ goto :eof
 :logo
 cls
 echo.
-echo  #                        #####                              
-echo  #       # #    # #    # #     # #    # # #####  #####  #   #
-echo  #       # ##   # #   #  #       #   #  # #    # #    #  # # 
-echo  #       # # #  # ####    #####  ####   # #    # #    #   #  
-echo  #       # #  # # #  #         # #  #   # #####  #####    #  
-echo  #       # #   ## #   #  #     # #   #  # #      #        #  
-echo  ####### # #    # #    #  #####  #    # # #      #        #  
+echo. #                        #####                              
+echo. #       # #    # #    # #     # #    # # #####  #####  #   #
+echo. #       # ##   # #   #  #       #   #  # #    # #    #  # # 
+echo. #       # # #  # ####    #####  ####   # #    # #    #   #  
+echo. #       # #  # # #  #         # #  #   # #####  #####    #  
+echo. #       # #   ## #   #  #     # #   #  # #      #        #  
+echo. ####### # #    # #    #  #####  #    # # #      #        #  
 echo.
 goto :eof
 
@@ -118,15 +118,15 @@ PowerShell Invoke-Command {^
 goto :eof
 
 :receivedPacket
-echo  %MODE% packet received...
+echo. %MODE% packet received...
 pktmon stop>nul 2>&1
-echo  Parsing packet data...
+echo. Parsing packet data...
 start /min /wait pktmon etl2txt "%ETL%" --out "%TXT%" --verbose 3
 IF /I %MODE% EQU CDP call :parseCDP
 IF /I %MODE% EQU LLDP call :parseLLDP
 call :resetSession
 echo.
-echo  Press any key to restart...
+echo. Press any key to restart...
 pause>nul
 goto begin
 
@@ -134,14 +134,14 @@ goto begin
 find "oui Cisco (0x00000c), pid CDP (0x2000)" "%TXT%" >nul 2>&1
 if %errorlevel% EQU 0 (
   echo.
-  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Device-ID (" "%TXT%"') do echo  Device:%%e
-  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Address (" "%TXT%"') do echo  Address:%%e
-  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Port-ID (" "%TXT%"') do echo  Port:%%e
-  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Capability (" "%TXT%"') do echo  Capability:%%e
-  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Platform (" "%TXT%"') do echo  Platform:%%e
-  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "VTP Management Domain (" "%TXT%"') do echo  Domain:%%e
-  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Native VLAN ID (" "%TXT%"') do echo  VLAN:%%e
-  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Duplex (" "%TXT%"') do echo  Duplex:%%e
+  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Device-ID (" "%TXT%"') do echo. Device:%%e
+  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Address (" "%TXT%"') do echo. Address:%%e
+  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Port-ID (" "%TXT%"') do echo. Port:%%e
+  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Capability (" "%TXT%"') do echo. Capability:%%e
+  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Platform (" "%TXT%"') do echo. Platform:%%e
+  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "VTP Management Domain (" "%TXT%"') do echo. Domain:%%e
+  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Native VLAN ID (" "%TXT%"') do echo. VLAN:%%e
+  for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Duplex (" "%TXT%"') do echo. Duplex:%%e
 )
 goto :eof
 
