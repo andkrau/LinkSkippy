@@ -134,6 +134,7 @@ goto begin
 find "oui Cisco (0x00000c), pid CDP (0x2000)" "%TXT%" >nul 2>&1
 if %errorlevel% EQU 0 (
   echo.
+  for /f "skip=2 tokens=1" %%a in ('find " > 01-00-0C-CC-CC-CC" "%TXT%"') do echo. MAC: %%a
   for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Device-ID (" "%TXT%"') do echo. Device:%%e
   for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Address (" "%TXT%"') do echo. Address:%%e
   for /f "skip=2 tokens=1-4* delims=(),:" %%a in ('find "Port-ID (" "%TXT%"') do echo. Port:%%e
