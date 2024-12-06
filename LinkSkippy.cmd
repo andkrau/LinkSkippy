@@ -105,6 +105,7 @@ goto :eof
 
 :enterPromiscuous
 if "%1" NEQ "Enabled" goto :eof
+for /f delims^=^,^"^ tokens^=^1-4 %%a in ('getmac /v /fo csv') do if "%%a" EQU "%~4" echo. Listening on %%a - %%c
 PowerShell Invoke-Command {^
   Add-NetEventNetworkAdapter -Name '%~4' -PromiscuousMode $True;^
 }>nul 2>&1
